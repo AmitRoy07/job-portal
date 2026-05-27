@@ -14,6 +14,9 @@ export const registerUserSchema = z.object({
     role: z.enum(['applicant', 'employer'], {
         error: "Role must be either 'applicant' or 'employer'",
     }).default('applicant'),
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
 })
 
 // z.infer will create a TypeScript type based on the Zod schema

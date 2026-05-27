@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useState } from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -69,6 +69,9 @@ const RegistrationForm = () => {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(registerUserSchema),
+    defaultValues: {
+      role: "applicant",
+    },
   });
 
   // const handleInputChange = (name: string, value: string) => {
@@ -87,11 +90,6 @@ const RegistrationForm = () => {
     //   role: formData.role,
     // };
 
-    if (data.password.trim() !== data.confirmPassword.trim()) {
-      // Handle password mismatch error
-      return toast.error("Passwords do not match");
-    }
-
     // console.log(data);
     const result = await registrationAction(data);
     // console.log(result);
@@ -108,8 +106,6 @@ const RegistrationForm = () => {
       toast.error(result.message);
     }
   };
-
-  console.log(errors);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -316,6 +312,11 @@ const RegistrationForm = () => {
                   )}
                 </Button>
               </div>
+              {errors.confirmPassword && (
+                <p className="text-sm text-destructive mt-1">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
             </div>
 
             {/* Submit Button */}
