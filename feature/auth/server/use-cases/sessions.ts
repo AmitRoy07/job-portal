@@ -1,5 +1,5 @@
 
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import crypto from 'crypto';
 import { getClientIp } from './location';
 import { db } from '@/config/db';
@@ -21,7 +21,7 @@ const generateSessionToken = () => {
 // Create a new session in the database and return the new session ID.
 const createUserSession = async ({token, userId, ip, userAgent}: CreateUserSessionParams) => {
     // Store only a hash of the token in the database, not the raw cookie value.
-    const hashToken = crypto.createHash('sha-256').update(token).digest('hex');
+    const hashToken = crypto.createHash('sha256').update(token).digest('hex');
 
     const [result] = await 
     db.insert(sessions).values({
@@ -48,5 +48,15 @@ export const createSessionAndSetCookie = async (userId: number) => {
         // Keep a fallback in case the browser or client does not send a user-agent.
         userAgent: headerList.get('user-agent') || 'unknown',
     });
+
+    const cookieStore = await cookies();
+
+    cookieStore.set('session', token, 
+        {
+            secure: true,
+            httpOnly: true,
+            maxAge: SESSION_LIFETIME,
+        }
+    )
 
 }

@@ -18,7 +18,7 @@ export const registrationAction = async (data: RegisterUserData) => {
   try {
     const { data: validatedData, error } = registerUserSchema.safeParse(data);
 
-    console.log(validatedData);
+    // console.log(validatedData);
 
     if (error) {
       return {
@@ -50,9 +50,11 @@ export const registrationAction = async (data: RegisterUserData) => {
 
     const hashedPassword = await argon2.hash(password); // Replace with actual hashing logic
 
-    await db
+    const [result] = await db
       .insert(users)
       .values({ name, userName, email, password: hashedPassword, role });
+
+      await createSessionAndSetCookie(result.insertId);
 
     return {
       status: "SUCCESS",

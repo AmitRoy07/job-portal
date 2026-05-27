@@ -1,0 +1,1 @@
+ALTER TABLE `sessions` DROP INDEX `sessions_ip_unique`;

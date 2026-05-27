@@ -26,7 +26,7 @@ import { registrationAction } from "@/feature/auth/server/auth.action";
 //   RegisterUserWithConfirmData,
 //   registerUserWithConfirmSchema,
 // } from "@/feature/auth/auth.schema";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   RegisterUserData,
@@ -64,7 +64,7 @@ const RegistrationForm = () => {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     reset,
     formState: { errors },
   } = useForm({
@@ -143,12 +143,12 @@ const RegistrationForm = () => {
                   //   handleInputChange("name", e.target.value)
                   // }
                 />
-                {errors.name && (
-                  <p className="text-sm text-destructive mt-1">
-                    {errors.name.message}
-                  </p>
-                )}
               </div>
+              {errors.name && (
+                <p className="text-sm text-destructive mt-1">
+                  {errors.name.message}
+                </p>
+              )}
             </div>
 
             {/* Username Field */}
@@ -170,12 +170,12 @@ const RegistrationForm = () => {
                   //   handleInputChange("userName", e.target.value)
                   // }
                 />
-                {errors.userName && (
-                  <p className="text-sm text-destructive mt-1">
-                    {errors.userName.message}
-                  </p>
-                )}
               </div>
+              {errors.userName && (
+                <p className="text-sm text-destructive mt-1">
+                  {errors.userName.message}
+                </p>
+              )}
             </div>
 
             {/* Email Field */}
@@ -197,12 +197,12 @@ const RegistrationForm = () => {
                   //   handleInputChange("email", e.target.value)
                   // }
                 />
-                {errors.email && (
-                  <p className="text-sm text-destructive mt-1">
-                    {errors.email.message}
-                  </p>
-                )}
               </div>
+              {errors.email && (
+                <p className="text-sm text-destructive mt-1">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
             {/* Role Selection */}
@@ -210,28 +210,21 @@ const RegistrationForm = () => {
               <Label className="block" htmlFor="role">
                 I am a *
               </Label>
-              {/* <Controller
+              <Controller
                 name="role"
                 control={control}
                 render={({ field }) => (
-                  
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select your role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="applicant">Job Applicant</SelectItem>
+                      <SelectItem value="employer">Employer</SelectItem>
+                    </SelectContent>
+                  </Select>
                 )}
-              ></Controller> */}
-              <Select
-                {...register("role")}
-                // value={formData.role}
-                // onValueChange={(value) => {
-                //   value && handleInputChange("role", value);
-                // }}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select your role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="applicant">Job Applicant</SelectItem>
-                  <SelectItem value="employer">Employer</SelectItem>
-                </SelectContent>
-              </Select>
+              ></Controller>
               {errors.role && (
                 <p className="text-sm text-destructive mt-1">
                   {errors.role.message}
