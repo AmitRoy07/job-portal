@@ -1,4 +1,4 @@
-import RegisterPage from "@/components/auth/register-page";
+import RegistrationForm from "@/components/auth/register-page";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -6,6 +6,6 @@ export const metadata: Metadata = {
   description: "Create your Job Portal account and get started.",
 };
 
-export default function Home() {
-  return <RegisterPage />;
+export default function RegisterRoute() {
+  return <RegistrationForm />;
 }
