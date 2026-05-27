@@ -18,7 +18,7 @@ const generateSessionToken = () => {
     return crypto.randomBytes(32).toString('hex');
 }
 
-
+// Create a new session in the database and return the new session ID.
 const createUserSession = async ({token, userId, ip, userAgent}: CreateUserSessionParams) => {
     // Store only a hash of the token in the database, not the raw cookie value.
     const hashToken = crypto.createHash('sha-256').update(token).digest('hex');
