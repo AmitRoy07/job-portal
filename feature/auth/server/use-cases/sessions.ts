@@ -3,8 +3,9 @@ import { cookies, headers } from 'next/headers';
 import crypto from 'crypto';
 import { getClientIp } from './location';
 import { db } from '@/config/db';
-import { sessions } from '@/drizzle/schema';
-import { SESSION_LIFETIME } from '@/config/constant';
+import { sessions, users } from '@/drizzle/schema';
+import { SESSION_LIFETIME, SESSION_REFRESH_TIME } from '@/config/constant';
+import { eq} from "drizzle-orm";
 
 type CreateUserSessionParams = {
     token: string;
@@ -22,7 +23,7 @@ const generateSessionToken = () => {
 const createUserSession = async ({token, userId, ip, userAgent}: CreateUserSessionParams) => {
     // Store only a hash of the token in the database, not the raw cookie value.
     const hashToken = crypto.createHash('sha256').update(token).digest('hex');
-
+ 
     const [result] = await 
     db.insert(sessions).values({
         id: hashToken, 
@@ -59,4 +60,51 @@ export const createSessionAndSetCookie = async (userId: number) => {
         }
     )
 
+}
+
+
+
+export const validateSessionAndGetUser = async (session: string) => {
+    const hashToken = crypto.createHash('sha256').update(session).digest('hex');
+
+    const [user] = await db.select({
+        id: users.id,
+        session: {
+            id: sessions.id,
+            expireAt: sessions.expireAt,
+            userAgent: sessions.userAgent,
+            ip: sessions.ip,
+        },
+        name: users.name,
+        userName: users.userName,
+        email: users.email,
+        role: users.role,
+        phoneNumber: users.phoneNumber,
+        createAt: users.createAt,
+        updateAt: users.updateAt,
+    })
+    .from(sessions)
+    .where(eq(sessions.id, hashToken))
+    .innerJoin(users, eq(sessions.userId, users.id));
+
+    if (!user) {
+        return null;
+    }
+
+    if (Date.now() >= user.session.expireAt.getTime()) {
+        await invalidateSession(user.session.id);
+        return null;
+    }
+
+    if (Date.now() >= user.session.expireAt.getTime() - SESSION_REFRESH_TIME * 1000) {
+        await db.update(sessions)
+        .set({ expireAt: new Date(Date.now() + SESSION_LIFETIME * 1000) })
+        .where(eq(sessions.id, user.session.id));
+    }
+
+    return user;
+}
+
+const invalidateSession = async (sessionId: string) => {
+    await db.delete(sessions).where(eq(sessions.id, sessionId));
 }

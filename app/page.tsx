@@ -1,4 +1,4 @@
-import RegisterPage from "@/components/auth/register-page";
+import { getCurrentUser } from "@/feature/auth/server/auth.queries";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -6,6 +6,12 @@ export const metadata: Metadata = {
   description: "Create your Job Portal account and get started.",
 };
 
-export default function Home() {
-  return <RegisterPage />;
+export default async function Home() {
+  const user = await getCurrentUser();
+
+  console.log(user);
+
+  return (
+    <h1 className="text-3xl font-bold underline">{user?.name}, Hello world!</h1>
+  );
 }
