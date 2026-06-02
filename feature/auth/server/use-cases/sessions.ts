@@ -6,6 +6,7 @@ import { db } from '@/config/db';
 import { sessions, users } from '@/drizzle/schema';
 import { SESSION_LIFETIME, SESSION_REFRESH_TIME } from '@/config/constant';
 import { eq} from "drizzle-orm";
+import { redirect } from 'next/navigation';
 
 type CreateUserSessionParams = {
     token: string;
@@ -105,6 +106,11 @@ export const validateSessionAndGetUser = async (session: string) => {
     return user;
 }
 
-const invalidateSession = async (sessionId: string) => {
+// invalidate the session by deleting it from the database, which will also remove the cookie on the client side.
+export const invalidateSession = async (sessionId: string) => {
     await db.delete(sessions).where(eq(sessions.id, sessionId));
 }
+
+// log out the user by invalidating the session and removing the cookie.
+
+

@@ -95,13 +95,18 @@ const RegistrationForm = () => {
     // console.log(result);
 
     if (result.status === "SUCCESS") {
+      if (data.role === "applicant") {
+        router.push("/dashboard");
+      } else {
+        router.push("/employer-dashboard");
+      }
+    }
+
+    if (result.status === "SUCCESS") {
       toast.success(result.message);
 
       // Clear all form values
       reset();
-
-      // Redirect to login page after successful registration
-      router.push("/login");
     } else {
       toast.error(result.message);
     }

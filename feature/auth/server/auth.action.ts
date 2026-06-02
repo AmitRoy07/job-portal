@@ -10,7 +10,10 @@ import {
   RegisterUserData,
   registerUserSchema,
 } from "../auth.schema";
-import { createSessionAndSetCookie } from "./use-cases/sessions";
+import { createSessionAndSetCookie, invalidateSession } from "./use-cases/sessions";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import crypto from 'crypto';
 
 export const registrationAction = async (data: RegisterUserData) => {
   console.log(data);
@@ -108,6 +111,7 @@ export const loginAction = async (data: LoginUserData) => {
       return {
         status: "ERROR",
         message: "Invalid Email or Password",
+        
       };
     }
 
@@ -116,6 +120,7 @@ export const loginAction = async (data: LoginUserData) => {
     return {
       status: "SUCCESS",
       message: "Login successful",
+      role: user.role
     };
   } catch (error) {
     return {
@@ -124,3 +129,20 @@ export const loginAction = async (data: LoginUserData) => {
     };
   }
 };
+
+
+export const LogOutUserAction = async () => {
+    const cookieStore = await cookies();
+    const session = cookieStore.get('session')?.value;
+
+    if (!session) {
+        return redirect('/login');
+    }
+
+    const hashToken = crypto.createHash('sha256').update(session).digest('hex');
+
+    await invalidateSession(hashToken);
+    cookieStore.delete('session');
+
+    return redirect('/login');
+}

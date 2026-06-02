@@ -18,9 +18,11 @@ import { toast } from "sonner";
 import { LoginUserData, LoginUserSchema } from "@/feature/auth/auth.schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 
 const LoginForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
   const {
     register,
@@ -32,6 +34,16 @@ const LoginForm: React.FC = () => {
 
   const onSubmit = async (data: LoginUserData) => {
     const response = await loginAction(data);
+
+    console.log(response);
+
+    if (response.status === "SUCCESS") {
+      if (response.role === "applicant") {
+        router.push("/dashboard");
+      } else {
+        router.push("/employer-dashboard");
+      }
+    }
 
     if (response.status === "SUCCESS") {
       toast.success(response.message);
