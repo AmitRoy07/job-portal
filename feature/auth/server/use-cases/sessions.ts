@@ -13,6 +13,7 @@ type CreateUserSessionParams = {
     userId: number;
     ip: string;
     userAgent: string;
+    tx?: DBClient;
 }
 
 // Generate a random session token that can be safely stored in the user's cookie.
@@ -21,12 +22,12 @@ const generateSessionToken = () => {
 }
 
 // Create a new session in the database and return the new session ID.
-const createUserSession = async ({token, userId, ip, userAgent}: CreateUserSessionParams) => {
+const createUserSession = async ({token, userId, ip, userAgent, tx = db}: CreateUserSessionParams) => {
     // Store only a hash of the token in the database, not the raw cookie value.
     const hashToken = crypto.createHash('sha256').update(token).digest('hex');
  
     const [result] = await 
-    db.insert(sessions).values({
+    tx.insert(sessions).values({
         id: hashToken, 
         userId, 
         userAgent, 
@@ -37,7 +38,9 @@ const createUserSession = async ({token, userId, ip, userAgent}: CreateUserSessi
         return result;
 }
 
-export const createSessionAndSetCookie = async (userId: number) => {
+type DBClient = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+export const createSessionAndSetCookie = async (userId: number, tx: DBClient = db) => {
     // Create the token and collect request details used for session tracking.
     const token = generateSessionToken();
     const ip = await getClientIp();
@@ -49,6 +52,7 @@ export const createSessionAndSetCookie = async (userId: number) => {
         ip, 
         // Keep a fallback in case the browser or client does not send a user-agent.
         userAgent: headerList.get('user-agent') || 'unknown',
+        tx,
     });
 
     const cookieStore = await cookies();

@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { date, datetime, int, mysqlEnum, mysqlTable, text, timestamp, varchar, year } from 'drizzle-orm/mysql-core';
+import { datetime, int, mysqlEnum, mysqlTable, text, timestamp, varchar, year } from 'drizzle-orm/mysql-core';
 
 
 export const users = mysqlTable('users', {

@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/config/db";
-import { users } from "@/drizzle/schema";
+import { users, applicants, employers } from "@/drizzle/schema";
 import argon2 from "argon2";
 import { eq, or } from "drizzle-orm";
 import {
@@ -53,11 +53,20 @@ export const registrationAction = async (data: RegisterUserData) => {
 
     const hashedPassword = await argon2.hash(password); // Replace with actual hashing logic
 
-    const [result] = await db
-      .insert(users)
-      .values({ name, userName, email, password: hashedPassword, role });
+    await db.transaction( async(tx) => {
+      const [result] = await tx
+        .insert(users)
+        .values({ name, userName, email, password: hashedPassword, role });
 
-      await createSessionAndSetCookie(result.insertId);
+        if (role === "applicant") {
+          await tx.insert(applicants).values({id: result.insertId});
+        } else {
+          await tx.insert(employers).values({id: result.insertId});
+        }
+  
+        await createSessionAndSetCookie(result.insertId, tx);
+    })
+
 
     return {
       status: "SUCCESS",
