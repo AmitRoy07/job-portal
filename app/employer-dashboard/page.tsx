@@ -1,4 +1,5 @@
 import { getCurrentUser } from "@/feature/auth/server/auth.queries";
+import { EmployerProfileCompletionStatus } from "@/feature/employers/components/employer-profile-status";
 import { StatsCards } from "@/feature/employers/components/employer-stats";
 
 const EmployerDashboard = async () => {
@@ -18,6 +19,8 @@ const EmployerDashboard = async () => {
 
       {/* Stats Cards */}
       <StatsCards />
+
+      <EmployerProfileCompletionStatus />
     </div>
   );
 };

@@ -124,7 +124,17 @@ export const loginAction = async (data: LoginUserData) => {
       };
     }
 
-    await createSessionAndSetCookie(user.id);
+    // await db.transaction( async(tx) => {
+
+    //   if (user.role === "applicant") {
+    //       await tx.insert(applicants).values({id: result.insertId});
+    //     } else {
+    //       await tx.insert(employers).values({id: result.insertId});
+    //     }
+
+    // })
+    
+        await createSessionAndSetCookie(user.id);
 
     return {
       status: "SUCCESS",
