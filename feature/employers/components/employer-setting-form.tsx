@@ -41,6 +41,7 @@ import {
   teamSizes,
 } from "../employers.schema";
 import { Textarea } from "@/components/ui/textarea";
+import Tiptap from "@/components/text-editor";
 
 // const organizationTypeOptions = [
 //   "developer",
@@ -269,6 +270,10 @@ const EmployerSettingsForm = ({
                 {errors.description.message}
               </p>
             )}
+          </div>
+
+          <div>
+            <Tiptap />
           </div>
 
           {/* <div className="space-y-2">

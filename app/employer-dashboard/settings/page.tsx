@@ -22,7 +22,7 @@ const EmployerSettings = async () => {
             location: employer.employerDetails.location,
             websiteUrl: employer.employerDetails.websiteUrl,
             yearOffStablishment:
-              employer.employerDetails.yearOffStablishment.toString(),
+              employer?.employerDetails.yearOffStablishment?.toString(),
           } as EmployerProfileData
         }
       />

@@ -10,9 +10,21 @@ import { usePathname } from "next/navigation";
 const EmployerSidebar = () => {
   const pathname = usePathname();
 
-  // const isActiveLink = (currentPath: string, itemPath: string, exact: boolean) => {
+  const isActiveLink = (
+    currentPath: string,
+    itemPath: string,
+    exact?: boolean,
+  ) => {
+    const normalizedHref = itemPath.replace(/\/$/, "") || "/";
 
-  // }
+    const pattern = new URLPattern({
+      pathname: normalizedHref === currentPath ? "/" : `${normalizedHref}{/*}?`,
+    });
+
+    // console.log("pattern", pattern, pattern.test({ pathname }));
+
+    return pattern.test({ pathname });
+  };
 
   return (
     <div className="w-64 bg-card border-r border-border fixed bottom-0 top-0">
@@ -27,7 +39,7 @@ const EmployerSidebar = () => {
           const Icon = item.icon;
           // Using your existing robust utility function! No URLPattern needed.
           const active = true;
-          // isActiveLink(pathname, item.href, item.exact);
+          isActiveLink(pathname, item.href, item.exact);
 
           return (
             <Link
