@@ -170,7 +170,7 @@ const ToolBar = ({ editor }: { editor: Editor }) => {
     if (value === "paragraph") {
       editor.chain().focus().setParagraph().run();
     } else {
-      const level = Number.parseInt(value.replace("heading", "")) as
+      const level = Number?.parseInt(value.replace("heading", "")) as
         | 1
         | 2
         | 3
